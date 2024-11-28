@@ -13,7 +13,7 @@ module rom_file_c #(parameter file , addr_width = 8, data_width = 8)
     (*rom_style = "block" *) logic [data_width - 1:0] rom [0:2**(addr_width - 1)];
 
     initial
-        $readmemb(file, rom); // change this
+        $readmemb(file, rom); 
 
     always_ff @(posedge clk)
         data <= rom[addr]; 
