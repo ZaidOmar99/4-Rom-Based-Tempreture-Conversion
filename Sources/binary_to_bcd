@@ -1,0 +1,19 @@
+`timescale 1ns / 1ps
+
+        module binary_to_bcd
+            (
+            input logic [7:0] sw,
+            
+            output logic [3:0] ones,
+            output logic [3:0] tens,
+            output logic [3:0] hundreds
+            );
+            
+                  
+            always_comb 
+            begin 
+                ones = sw % 10;                           
+                tens = (sw/10) % 10 ;                   
+                hundreds = sw / 100;               
+            end   
+        endmodule
