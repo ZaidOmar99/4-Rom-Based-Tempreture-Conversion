@@ -1,0 +1,74 @@
+`timescale 1ns / 1ps
+
+
+module top(
+            input logic clk,
+            input logic [7:0] addr,
+            input logic sel,
+            output logic [0:6] top_seg,
+            //output logic [7:0] mux_out,
+            
+            //output logic [7:0] top_an,
+            output logic [7:0] top_digit
+    );
+    
+    logic [7:0] data_c,data_f;
+    logic [7:0] binary_data_c, binary_data_f;
+    logic [7:0] mux_out;
+    logic [3:0] seg1,seg2,seg3,seg4,seg5,seg6,seg7,seg8;
+    logic [3:0] ones_addr, tens_addr, hundreds_addr ;
+    logic [3:0] ones_mux, tens_mux, hundreds_mux ;
+   
+    
+    rom_file_c  #(.file("c_2_f.mem"))
+    (
+             .clk(clk),
+             .addr(addr),
+             .data(data_c)
+    );
+
+    rom_file_c#(.file("f_2_c.mem"))(
+             .clk(clk),
+             .addr(addr),
+             .data(data_f)
+    );
+    
+   
+    assign mux_out = sel ? data_c : data_f;
+    
+    binary_to_bcd                            // addr BCD
+        (
+        .sw(addr),          
+        
+        .ones(ones_addr),
+        .tens(tens_addr),
+        .hundreds(hundreds_addr)
+        );
+        
+        binary_to_bcd                            // addr BCD
+        (
+        .sw(mux_out),          
+        
+        .ones(ones_mux),
+        .tens(tens_mux),
+        .hundreds(hundreds_mux)
+        );
+        
+        
+     segment (
+                    .clock(clk),
+                    .digit_inp0(ones_addr),
+                    .digit_inp1(tens_addr),
+                    .digit_inp2(hundreds_addr),
+                    .digit_inp3(0),
+                    .digit_inp4(ones_mux),
+                    .digit_inp5(tens_mux),
+                    .digit_inp6(hundreds_mux),
+                    .digit_inp7(0),
+                    .seg(top_seg),       // segment pattern 0-9
+                    .digit(top_digit)    
+                    );
+    
+       
+        
+endmodule
